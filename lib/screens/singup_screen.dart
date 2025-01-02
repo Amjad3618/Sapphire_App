@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:genrator_11/bottom_bar/bottom_bar.dart';
+import 'package:get/get.dart';
 
 class SingUpScreen extends StatefulWidget {
   const SingUpScreen({super.key});
@@ -156,6 +158,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         // Handle login logic
+                      Get.to(BottomBar());
                       }
                     },
                     style: ElevatedButton.styleFrom(

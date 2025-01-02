@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:genrator_11/screens/login_screen.dart';
+import 'package:get/get.dart';
 
-import 'bottom_bar/bottom_bar.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
      ),
         useMaterial3: true,
       ),
-      home:BottomBar()
+      home:LoginScreen()
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:genrator_11/bottom_bar/bottom_bar.dart';
 import 'package:genrator_11/screens/singup_screen.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -131,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         // Handle login logic
+                            Get.to(BottomBar());
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -157,10 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextButton(
                         onPressed: () {
                           // Handle navigation to sign up
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            
-return SingUpScreen();
-                          },));
+                         Get.to(SingUpScreen());
                         },
                         child: const Text('Sign Up'),
                       ),

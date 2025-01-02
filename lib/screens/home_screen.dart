@@ -38,14 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-                height: 200,
+                height: 100,
                 width: double.infinity,
                 decoration: BoxDecoration(
                     gradient: const LinearGradient(
                         colors: [Colors.blue, Colors.black]),
                     color: btncolor,
                     border: Border.all(),
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),topRight: Radius.circular(20))),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
