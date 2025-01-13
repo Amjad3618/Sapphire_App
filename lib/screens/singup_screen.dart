@@ -141,16 +141,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  // Forgot Password Link
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Handle forgot password
-                      },
-                      child: const Text('Forgot Password?'),
-                    ),
-                  ),
+                  
                   const SizedBox(height: 24),
 
                   // Login Button
@@ -185,6 +176,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                       TextButton(
                         onPressed: () {
                           // Handle navigation to sign up
+                          Get.back();
                         },
                         child: const Text('login'),
                       ),
