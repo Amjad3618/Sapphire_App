@@ -5,7 +5,7 @@ import '../widgets/text_widget.dart';
 import '../widgets/time_picker.dart';
 
 class AddAnotherCutOff extends StatefulWidget {
-  const AddAnotherCutOff({Key? key}) : super(key: key);
+  const AddAnotherCutOff({super.key});
 
   @override
   State<AddAnotherCutOff> createState() => _AddAnotherCutOffState();

@@ -8,6 +8,8 @@ import '../utils/colors.dart';
 
 
 class CircularFuelGauge extends StatefulWidget {
+  const CircularFuelGauge({super.key});
+
   @override
   _CircularFuelGaugeState createState() => _CircularFuelGaugeState();
 }

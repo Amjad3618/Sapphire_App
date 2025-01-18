@@ -5,10 +5,10 @@ class TimePickerFormField extends StatefulWidget {
   final String labelText;
 
   const TimePickerFormField({
-    Key? key,
+    super.key,
     required this.controller,
     this.labelText = 'Pick a time',
-  }) : super(key: key);
+  });
 
   @override
   _TimePickerFormFieldState createState() => _TimePickerFormFieldState();

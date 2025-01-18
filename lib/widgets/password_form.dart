@@ -7,11 +7,11 @@ class CustomPasswordField extends StatelessWidget {
   final VoidCallback toggleVisibility;
 
   const CustomPasswordField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.isPasswordVisible,
     required this.toggleVisibility,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

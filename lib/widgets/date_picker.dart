@@ -5,10 +5,10 @@ class DatePickerFormField extends StatefulWidget {
   final String labelText;
 
   const DatePickerFormField({
-    Key? key,
+    super.key,
     required this.controller,
     this.labelText = 'Pick a date',
-  }) : super(key: key);
+  });
 
   @override
   _DatePickerFormFieldState createState() => _DatePickerFormFieldState();
