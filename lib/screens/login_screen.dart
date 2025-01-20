@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:genrator_11/bottom_bar/bottom_bar.dart';
 import 'package:genrator_11/screens/singup_screen.dart';
 import 'package:get/get.dart';
+import '../Services/auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +16,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  // Changed to lazyPut for better memory management
+  final AuthService _authService = Get.put(AuthService(), permanent: true);
 
   @override
   void dispose() {
@@ -23,10 +27,46 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _handleLogin() async {  // Fixed method name casing
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final user = await _authService.login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),  // Added trim()
+        );
+
+        if (user != null) {
+          Get.offAll(() => const BottomBar());
+        }
+      } catch (e) {  // Added error handling
+        Get.snackbar(
+          'Error',
+          'Failed to login. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.1),
+          colorText: Colors.red,
+        );
+      } finally {
+        if (mounted) {  // Added mounted check
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login"),),
+      appBar: AppBar(
+        title: const Text("Login"),  // Added const
+        centerTitle: true,  // Added center alignment
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -37,15 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo or App Name
                   const Icon(
                     Icons.lock_outlined,
                     size: 80,
-                    color: Colors.blue,
+                    color: Colors.orange,
                   ),
                   const SizedBox(height: 32),
                   
-                  // Welcome Text
                   const Text(
                     'Welcome Back',
                     style: TextStyle(
@@ -56,10 +94,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    enabled: !_isLoading,  // Disabled during loading
                     decoration: InputDecoration(
                       labelText: 'Email',
                       hintText: 'Enter your email',
@@ -72,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!value.contains('@')) {
+                      if (!GetUtils.isEmail(value)) {  // Using GetX email validator
                         return 'Please enter a valid email';
                       }
                       return null;
@@ -80,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
+                    enabled: !_isLoading,  // Disabled during loading
                     decoration: InputDecoration(
                       labelText: 'Password',
                       hintText: 'Enter your password',
@@ -94,11 +132,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
+                        onPressed: _isLoading  // Disable during loading
+                            ? null
+                            : () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -116,52 +156,57 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  // Forgot Password Link
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {
-                        // Handle forgot password
-                      },
+                      onPressed: _isLoading  // Disable during loading
+                          ? null
+                          : () {
+                              // Handle forgot password
+                            },
                       child: const Text('Forgot Password?'),
                     ),
                   ),
                   const SizedBox(height: 24),
 
-                  // Login Button
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Handle login logic
-                            Get.to(BottomBar());
-                      }
-                    },
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,  // Added foreground color
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      elevation: 2,
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Login',  // Fixed casing
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Sign Up Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Don't have an account?"),
                       TextButton(
-                        onPressed: () {
-                          // Handle navigation to sign up
-                         Get.to(SingUpScreen());
-                        },
+                        onPressed: _isLoading  // Disable during loading
+                            ? null
+                            : () => Get.to(() => const SignUpScreen()),  // Improved navigation
                         child: const Text('Sign Up'),
                       ),
                     ],

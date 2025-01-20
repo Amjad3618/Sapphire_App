@@ -1,51 +1,117 @@
+// auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:genrator_11/screens/login_screen.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../models/useer_model.dart';
 
-class AuthService extends GetxService {
+class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Rx<UserModel?> _user = Rx<UserModel?>(null);
-
-  UserModel? get user => _user.value;
-
+  
+  Rx<User?> currentUser = Rx<User?>(null);
+  
   @override
   void onInit() {
+    currentUser.bindStream(_auth.authStateChanges());
     super.onInit();
-    _auth.authStateChanges().listen(_onAuthStateChanged);
   }
 
-  Future<void> _onAuthStateChanged(User? firebaseUser) async {
-    if (firebaseUser == null) {
-      _user.value = null;
-    } else {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(firebaseUser.uid).get();
-      _user.value = UserModel.fromJson(userDoc.data() as Map<String, dynamic>);
-    }
-  }
-
-  Future<void> signUp(String email, String password, String name) async {
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-    User? firebaseUser = userCredential.user;
-
-    if (firebaseUser != null) {
-      UserModel newUser = UserModel(
-        name: name,
+  Future<UserModel?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Create user with email and password
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
-        userId: firebaseUser.uid,
+        password: password,
       );
-      await _firestore.collection('users').doc(firebaseUser.uid).set(newUser.toJson());
-      _user.value = newUser;
+
+      if (userCredential.user != null) {
+        // Create user model
+        UserModel newUser = UserModel(
+          name: name,
+          email: email,
+          userId: userCredential.user!.uid,
+        );
+
+        // Save user data to Firestore
+        await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set(newUser.toJson());
+
+        return newUser;
+      }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'weak-password':
+          message = 'The password provided is too weak.';
+          break;
+        case 'email-already-in-use':
+          message = 'An account already exists for that email.';
+          break;
+        default:
+          message = 'An error occurred. Please try again.';
+      }
+      Get.snackbar('Error', message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
+    return null;
   }
 
-  Future<void> signIn(String email, String password) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<UserModel?> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential.user != null) {
+        // Fetch user data from Firestore
+        DocumentSnapshot userDoc = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          return UserModel.fromJson(userDoc.data() as Map<String, dynamic>);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'user-not-found':
+          message = 'No user found for that email.';
+          break;
+        case 'wrong-password':
+          message = 'Wrong password provided.';
+          break;
+        default:
+          message = 'An error occurred. Please try again.';
+      }
+      Get.snackbar('Error', message, snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
+    return null;
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
-    _user.value = null;
+    try {
+      await _auth.signOut();
+      Get.offAll(LoginScreen()); // Navigate to login screen
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to sign out. Please try again.',
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 }

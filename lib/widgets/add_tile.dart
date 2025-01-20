@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
-
-
 import '../utils/colors.dart';
 import 'text_widget.dart';
 
 class AddTile extends StatefulWidget {
-  const AddTile({super.key});
+  final String email;
+  final String cutoffTime;
+  final String turnOnTime;
+  final String cutoffDate;
+  final String turnOnDate;
+  final double fuelLevel; // Now expects value between 0-100
+
+  const AddTile({
+    super.key,
+    required this.email,
+    required this.cutoffTime,
+    required this.turnOnTime,
+    required this.cutoffDate,
+    required this.turnOnDate,
+    required this.fuelLevel,
+  });
 
   @override
   State<AddTile> createState() => _AddTileState();
@@ -14,110 +27,135 @@ class AddTile extends StatefulWidget {
 class _AddTileState extends State<AddTile> {
   @override
   Widget build(BuildContext context) {
+    // Convert fuel level to decimal for CircularProgressIndicator
+    final progressValue = widget.fuelLevel / 100;
+    
     return Container(
-              height: 200,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white
-                 ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(radius: 30, backgroundColor: Colors.grey,),
-                        const SizedBox(
-                          width: 10,
+      height: MediaQuery.of(context).size.height*0.3,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage("assets/man.png")
+                ),
+                const SizedBox(width: 10),
+                CustomTextWidget(
+                  text: widget.email,
+                  fontSize: 20,
+                  color: btncolor,
+                  fontWeight: FontWeight.bold,
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 5,
+                          value: progressValue, // Using converted value here
+                          backgroundColor: Colors.grey[200],
+                          color: Colors.green,
                         ),
-                        CustomTextWidget(
-                          text: "User name",
-                          fontSize: 30,
-                          color:btncolor,
+                      ),
+                      Text(
+                        '${widget.fuelLevel.toInt()}%', // Display original value directly
+                        style: const TextStyle(
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                        const Spacer(),
-                        const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 5,
-                            value: 50,
-                            color: Colors.amber,
-                          ),
-                        )
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomTextWidget(
+                      text: "Cut-off Time",
+                      fontSize: 18,
+                      color: Color.fromARGB(255, 168, 13, 2),
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(
-                      height: 15,
+                    CustomTextWidget(
+                      text: widget.cutoffTime,
+                      fontSize: 16,
+                      color: btncolor,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const CustomTextWidget(
-                              text: "Cutt of time ",
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 168, 13, 2),
-                              fontWeight: FontWeight.bold,
-                            ),
-                            CustomTextWidget(
-                              text: "10:30 ",
-                              fontSize: 15,
-                              color: btncolor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const CustomTextWidget(
-                              text: "Cutt of Date ",
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 199, 15, 1),
-                              fontWeight: FontWeight.bold,
-                            ),
-                            CustomTextWidget(
-                              text: "20/12/2024 ",
-                              fontSize: 15,
-                              color: btncolor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            CustomTextWidget(
-                              text: "Return time ",
-                              fontSize: 20,
-                              color: btncolor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const CustomTextWidget(
-                              text: "10:30 ",
-                              fontSize: 15,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            CustomTextWidget(
-                              text: "Return Date  ",
-                              fontSize: 20,
-                              color: btncolor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const CustomTextWidget(
-                              text: "20/12/2024 ",
-                              fontSize: 15,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
-                        )
-                      ],
-                    )
+                    const CustomTextWidget(
+                      text: "Cut-off Date",
+                      fontSize: 18,
+                      color: Color.fromARGB(255, 199, 15, 1),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    CustomTextWidget(
+                      text: widget.cutoffDate,
+                      fontSize: 16,
+                      color: btncolor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ],
                 ),
-              ),
-            );
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    CustomTextWidget(
+                      text: "Return Time",
+                      fontSize: 18,
+                      color: btncolor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    CustomTextWidget(
+                      text: widget.turnOnTime,
+                      fontSize: 16,
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    CustomTextWidget(
+                      text: "Return Date",
+                      fontSize: 18,
+                      color: btncolor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    CustomTextWidget(
+                      text: widget.turnOnDate,
+                      fontSize: 16,
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
