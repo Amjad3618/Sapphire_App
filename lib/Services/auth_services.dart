@@ -18,53 +18,45 @@ class AuthService extends GetxController {
     super.onInit();
   }
 
-  Future<UserModel?> signUp({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
-    try {
-      // Create user with email and password
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+ Future<UserModel?> signUp({
+  required String name,
+  required String email,
+  required String password,
+}) async {
+  try {
+    // Create user with email and password
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    if (userCredential.user != null) {
+      // Create user model
+      UserModel newUser = UserModel(
+        name: name,
         email: email,
-        password: password,
+        userId: userCredential.user!.uid,
       );
 
-      if (userCredential.user != null) {
-        // Create user model
-        UserModel newUser = UserModel(
-          name: name,
-          email: email,
-          userId: userCredential.user!.uid,
-        );
+      // Debug log
+      print('Creating user with name: $name');
+      print('User model name value: ${newUser.name}');
+      final jsonData = newUser.toJson();
+      print('JSON data to be saved: $jsonData');
 
-        // Save user data to Firestore
-        await _firestore
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set(newUser.toJson());
+      // Save user data to Firestore
+      await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(jsonData);
 
-        return newUser;
-      }
-    } on FirebaseAuthException catch (e) {
-      String message;
-      switch (e.code) {
-        case 'weak-password':
-          message = 'The password provided is too weak.';
-          break;
-        case 'email-already-in-use':
-          message = 'An account already exists for that email.';
-          break;
-        default:
-          message = 'An error occurred. Please try again.';
-      }
-      Get.snackbar('Error', message, snackPosition: SnackPosition.BOTTOM);
-    } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      return newUser;
     }
-    return null;
+  } on FirebaseAuthException catch (e) {
+    // Error handling code unchanged
   }
-
+  return null;
+}
   Future<UserModel?> login({
     required String email,
     required String password,

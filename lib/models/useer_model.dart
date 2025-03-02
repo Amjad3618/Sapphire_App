@@ -1,4 +1,3 @@
-// user_model.dart
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class UserModel {
@@ -20,7 +19,6 @@ class UserModel {
     required String name,
     required String email,
     required String userId,
-    String? profileImageUrl,
   }) {
     _name.value = name;
     _email.value = email;
@@ -28,18 +26,21 @@ class UserModel {
   }
 
   // From JSON
-  UserModel.fromJson(Map<String, dynamic> json) {
-    _name.value = json['name'] ?? '';
-    _email.value = json['email'] ?? '';
-    _userId.value = json['userId'] ?? '';
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      userId: json['userId'] ?? '',
+    );
   }
 
   // To JSON
   Map<String, dynamic> toJson() {
-    return {
-      'name': _name.value,
-      'email': _email.value,
-      'userId': _userId.value,
+    final Map<String, dynamic> data = {
+      'userId': userId,
+      'email': email,
+      'name': name,
     };
+    return data;
   }
 }

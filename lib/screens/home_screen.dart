@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -204,7 +204,7 @@ Future<void> _showLogoutConfirmation() async {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: AddTile(
-                          email: data['email'] ?? 'N/A',
+                          email: (data['email'] ?? 'N/A').toString().split('@')[0],
                           cutoffTime: data['cutoffTime'] ?? 'N/A',
                           cutoffDate: data['cutoffDate'] ?? 'N/A',
                           turnOnTime: data['turnOnTime'] ?? 'N/A',

@@ -11,9 +11,9 @@ class PDFService {
     try {
       final pdf = pw.Document();
       
-      // Calculate how many items we can fit per page (adjust this number based on your needs)
+      // Set the maximum number of items per page
       const int itemsPerPage = 8;
-      
+
       // Split data into pages
       for (var i = 0; i < data.length; i += itemsPerPage) {
         final pageData = data.skip(i).take(itemsPerPage).toList();
@@ -85,11 +85,12 @@ class PDFService {
                       ),
                     );
                   }).toList(),
-                  
-                  // Page number
-                  pw.Positioned(
-                    bottom: 20,
-                    right: 20,
+
+                  // Page number placed inside a container at the bottom
+                  pw.SizedBox(height: 20),
+                  pw.Divider(),
+                  pw.Align(
+                    alignment: pw.Alignment.centerRight,
                     child: pw.Text(
                       'Page ${(i ~/ itemsPerPage) + 1} of ${(data.length / itemsPerPage).ceil()}',
                       style: pw.TextStyle(fontSize: 12),

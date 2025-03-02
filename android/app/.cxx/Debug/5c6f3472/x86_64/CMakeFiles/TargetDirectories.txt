@@ -1,0 +1,2 @@
+C:/Users/amjad/OneDrive/Desktop/D 11/Sapphire_App/android/app/.cxx/Debug/5c6f3472/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/amjad/OneDrive/Desktop/D 11/Sapphire_App/android/app/.cxx/Debug/5c6f3472/x86_64/CMakeFiles/rebuild_cache.dir
